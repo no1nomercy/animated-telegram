@@ -2,7 +2,7 @@ import * as cheerio from "cheerio";
 
 export default async function handler(req, res) {
   try {
-    const response = await fetch("https://neocities.org/site/mercylauncher");
+    const response = await fetch("https://neocities.org/site/mercylauncher"); // Burayı kendi URL’inle değiştir
     if (!response.ok) {
       return res.status(500).json({ error: `Neocities status: ${response.status}` });
     }
@@ -10,8 +10,9 @@ export default async function handler(req, res) {
     const html = await response.text();
     const $ = cheerio.load(html);
 
-    const element = $(".stat strong font font").first();
-    const views = element ? element.text().trim() : "0";
+    // .stats içindeki ilk .stat strong elementi → views
+    const viewsElement = $(".stats .stat").first().find("strong");
+    const views = viewsElement ? viewsElement.text().trim() : "0";
 
     res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate");
     res.status(200).json({ views });
