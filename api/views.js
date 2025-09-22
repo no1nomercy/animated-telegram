@@ -5,7 +5,7 @@ import * as cheerio from "cheerio";
 export default async function handler(req, res) {
   try {
     // Neocities sayfanızın URL'si
-    const url = "https://mercylauncher.neocities.org/";
+    const url = "https://neocities.org/site/mercylauncher/";
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Neocities status: ${response.status}`);
 
