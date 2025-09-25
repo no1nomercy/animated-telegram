@@ -1,13 +1,11 @@
 import * as cheerio from "cheerio";
 
 export default async function handler(req, res) {
-  try {
-    // --- 1x1 şeffaf PNG (base64) ---
-    const pixelBase64 =
-      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMBAQEAk1UAAAAASUVORK5CYII=";
-    const imgBuffer = Buffer.from(pixelBase64, "base64");
+  const pixelBase64 =
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMBAQEAk1UAAAAASUVORK5CYII=";
+  const imgBuffer = Buffer.from(pixelBase64, "base64");
 
-    // --- Cheerio ile Neocities sayfasını çek ---
+  try {
     const response = await fetch("https://neocities.org/site/mercylauncher");
     if (!response.ok) throw new Error(`Neocities status: ${response.status}`);
 
@@ -22,15 +20,14 @@ export default async function handler(req, res) {
       if (text.includes("updates")) stats.updates = value;
     });
 
-    // --- Tarayıcıya görsel gönder ---
-    res.setHeader("Content-Type", "image/png");
-    res.setHeader("Cache-Control", "no-cache");
-    res.send(imgBuffer);
-
-    // Konsolda JSON veriyi görebilirsiniz
     console.log("Stats:", stats);
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Error");
+    console.error("Fetch veya Cheerio Hatası:", err);
+    // Hata olsa bile tarayıcıya pixel gönderiyoruz
   }
+
+  // Her durumda 1x1 PNG gönder
+  res.setHeader("Content-Type", "image/png");
+  res.setHeader("Cache-Control", "no-cache");
+  res.send(imgBuffer);
 }
